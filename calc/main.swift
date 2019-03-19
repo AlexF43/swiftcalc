@@ -9,6 +9,16 @@
 import Foundation
 
 var args = ProcessInfo.processInfo.arguments
-args.removeFirst() // remove the name of the program
+args.removeFirst()
 
-print(Int(args[0])!)
+//validate input
+if (equationValidator(args: args)) {
+    calculate(equation: args)
+}
+
+// add div zero validator
+// add enum for bedmas rules
+// ask about output
+// add comments
+
+
