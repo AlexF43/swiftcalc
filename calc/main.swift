@@ -12,12 +12,13 @@ var args = ProcessInfo.processInfo.arguments
 args.removeFirst()
 
 //validate input
-if (equationValidator(args: args)) {
-    calculate(equation: args)
+let calculator = Calculator()
+let validator = Validator()
+
+if (validator.validate(args: args)) {
+    calculator.calculate(equation: args)
 }
 
-// add div zero validator
-// add enum for bedmas rules
 // ask about output
 // add comments
 

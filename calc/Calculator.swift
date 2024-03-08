@@ -8,48 +8,37 @@
 
 import Foundation
 
-
-func completeOperaton(currentOperator: (operation: String, index: Int), equation: [String]) -> [String] {
-    var operationResult:Int
-    
-    switch(currentOperator.operation) {
-    case "+":
-        operationResult = (Int(equation[currentOperator.index - 1])!) + (Int(equation[currentOperator.index + 1])!);
-    case "-":
-        operationResult = (Int(equation[currentOperator.index - 1])!) - (Int(equation[currentOperator.index + 1])!);
-    case "x":
-        operationResult = (Int(equation[currentOperator.index - 1])!) * (Int(equation[currentOperator.index + 1])!);
-    case "/":
-        operationResult = (Int(equation[currentOperator.index - 1])!) / (Int(equation[currentOperator.index + 1])!);
-    case "%":
-        operationResult = (Int(equation[currentOperator.index - 1])!) % (Int(equation[currentOperator.index + 1])!);
-    default:
-        operationResult = 0
+class Calculator {
+    func completeOperaton(currentOperator: (operation: Bedmas?, index: Int), equation: [String]) -> [String] {
+        
+        let operationResult = currentOperator.operation?.performOperation(
+            val1: (Int(equation[currentOperator.index - 1])!),
+            val2: (Int(equation[currentOperator.index + 1])!))
+        
+        var newEquation = equation
+        newEquation.remove(at: currentOperator.index + 1)
+        newEquation.remove(at: currentOperator.index - 1)
+        newEquation[currentOperator.index - 1] = String(operationResult ?? 0)
+        return newEquation
+        
     }
-    var newEquation = equation
-    newEquation.remove(at: currentOperator.index + 1)
-    newEquation.remove(at: currentOperator.index - 1)
-    newEquation[currentOperator.index - 1] = String(operationResult)
-    return newEquation
     
-}
-
-func calculate(equation: [String]){
-
-    let bedmasOperations = ["+": 0, "-": 1, "%": 2, "x": 3, "/": 4]
-    var currentOperation = (operation: equation[1], index: 1)
-    for i in stride(from: 3, to: equation.count, by: 2) {
-        if (bedmasOperations[equation[i]] ?? 0 > bedmasOperations[currentOperation.operation] ?? 0) {
-            currentOperation = (equation[i], i)
+    func calculate(equation: [String]) {
+        
+        var currentOperation = (operation: Bedmas(symbol: equation[0]), index: 1)
+        for i in stride(from: 3, to: equation.count, by: 2) {
+            if (Bedmas(symbol: equation[i])?.rawValue ?? 0 > currentOperation.operation?.rawValue ?? 0) {
+                currentOperation = (Bedmas(symbol: equation[i]), i)
+            }
         }
+        
+        let newEquation = completeOperaton(currentOperator: currentOperation, equation: equation)
+        
+        guard (newEquation.count == 1) else {
+            calculate(equation: newEquation)
+            return
+        }
+        
+        print(newEquation[0])
     }
-    
-    let newEquation = completeOperaton(currentOperator: currentOperation, equation: equation)
-    
-    guard (newEquation.count == 1) else {
-        calculate(equation: newEquation)
-        return
-    }
-    
-    print(newEquation[0])
 }
